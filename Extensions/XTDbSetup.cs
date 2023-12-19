@@ -20,7 +20,7 @@ namespace XT.Sql.Extensions
     /// </summary>
     public static class XTDbSetup
     {
-        public static IServiceCollection AddXTDbSetup(this IServiceCollection services)
+        public static IServiceCollection AddXTDbSetup(this IServiceCollection services,bool isscope=false)
         {
             var xtconfig = AppSettings.GetObjData<XTDbConfig>();
 
@@ -147,10 +147,17 @@ namespace XT.Sql.Extensions
 
 
             services.AddSingleton<ISqlSugarClient>(sugar);
-            services.AddSingleton<IUnitOfWork,UnitOfWork>();
+            if(isscope){
+                 services.AddScoped<IUnitOfWork,UnitOfWork>();
+                 services.AddScoped<XTDbContext>();
 
-            services.AddSingleton<XTDbContext>();
+            }
+            else{
+                 services.AddSingleton<IUnitOfWork,UnitOfWork>();
+                 services.AddSingleton<XTDbContext>();
 
+            }
+           
             //雪花ID器
             new IdHelperBootstrapper().SetWorkderId(1).Boot();
 
