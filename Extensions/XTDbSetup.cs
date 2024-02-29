@@ -101,8 +101,8 @@ namespace XT.Sql.Extensions
                         {
                         var pa = GetParams(pars);
                         var sqlLog= $"SqlLog{DateTime.Now:yyyy-MM-dd},【SQL参数】：\n {pa} 【SQL语句】：\n {sql}";
-
-                            XTDbContext.LogSql(sqlLog);
+                        var log = UtilMethods.GetSqlString(config.CurrentConnectionConfig.DbType, sql, pars);
+                        XTDbContext.LogSql(log);
                         }
                     };
 
@@ -160,6 +160,8 @@ namespace XT.Sql.Extensions
            
             //雪花ID器
             new IdHelperBootstrapper().SetWorkderId(1).Boot();
+
+        
 
             return services;
         }
