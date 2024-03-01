@@ -54,17 +54,16 @@ namespace XT.Sql
             try
             {
               
-                string path = AppSettings.IsDevelopment ? "appsettings.Development.json" : "appsettings.json";
-                using var file = new StreamReader(path);
+               
 
-                var xtconfig = AppSettings.GetObjData<XTDbConfig>("XTDbConfig");
+              
 
-                if (xtconfig == null || xtconfig.Dbs.Count < 1)
+                if (XTConfig == null || XTConfig.Dbs.Count < 1)
                 {
                     throw new System.Exception("请确保appsettings.json中配置连接字符串,并设置Enabled为true;");
                 }
 
-                allDbs = xtconfig.Dbs;
+                allDbs = XTConfig.Dbs;
 
                 masterDbs = allDbs.Where(x => x.IsMain && x.Enabled).ToList();
                 if (masterDbs.Count == 0)
@@ -75,7 +74,7 @@ namespace XT.Sql
 
 
                 //如果开启读写分离
-                if (xtconfig.IsReadAndWrite)
+                if (XTConfig.IsReadAndWrite)
                 {
                     slaveDbs = allDbs.Where(x => x.DbType == masterDbs[0].DbType && x.IsMain == false)
                         .ToList();
@@ -94,6 +93,9 @@ namespace XT.Sql
             }
         }
 
-        
+
+        public static XTDbConfig XTConfig { get; set; }
+
+
     }
 }

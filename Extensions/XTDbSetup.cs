@@ -12,6 +12,10 @@ using XT.Sql.Base;
 using XT.Common.Config;
 using XT.Common.Extensions;
 using XT.Common.Helpers;
+using Microsoft.Extensions.Configuration;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace XT.Sql.Extensions
 {
@@ -22,9 +26,28 @@ namespace XT.Sql.Extensions
     {
         public static IServiceCollection AddXTDbSetup(this IServiceCollection services,bool isscope=false)
         {
-            var xtconfig = AppSettings.GetObjData<XTDbConfig>();
+           var xtconfig= AppSettings.GetObjData<XTDbConfig>("XTDbConfig");
+            if(xtconfig==null)
+            {
+                //根据环境读取响应的appsettings
+                string appsettingsFile = AppSettings.IsDevelopment ? "appsettings.Development.json" : "appsettings.json";
 
-          
+                var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), appsettingsFile);
+
+              
+                using var file = new StreamReader(path);
+                using var reader = new JsonTextReader(file);
+                var jObj = (JObject)JToken.ReadFrom(reader);
+                
+                 var secJt = jObj["XTDbConfig"];
+
+                xtconfig = JsonConvert.DeserializeObject<XTDbConfig>(secJt.ToString());
+
+            }
+
+
+            BaseDbConfig.XTConfig= xtconfig;
+
             if (services.IsNullOrEmpty())
                 throw new ArgumentNullException(nameof(services));
             if (BaseDbConfig.GetDataBaseOperate.MasterDb.IsNullOrEmpty() || BaseDbConfig.GetDataBaseOperate.MasterDb.Count==0)
