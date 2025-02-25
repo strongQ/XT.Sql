@@ -24,9 +24,22 @@ namespace XT.Sql.Extensions
     /// </summary>
     public static class XTDbSetup
     {
-        public static IServiceCollection AddXTDbSetup(this IServiceCollection services,bool isscope=false)
+        /// <summary>
+        /// 添加db支持
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="isscope"></param>
+        /// <param name="xtconfig">配置项</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static IServiceCollection AddXTDbSetup(this IServiceCollection services,bool isscope=false,XTDbConfig xtconfig=null)
         {
-           var xtconfig= AppSettings.GetObjData<XTDbConfig>("XTDbConfig");
+            if (xtconfig == null)
+            {
+                xtconfig = AppSettings.GetObjData<XTDbConfig>("XTDbConfig");
+            }
+
+           
             if(xtconfig==null)
             {
                 //根据环境读取响应的appsettings
